@@ -1,0 +1,88 @@
+services:
+  # 1. API Gateway
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - order-service
+      - inventory-service
+
+  # # 2. Auth Service (Stub)
+  # auth-service:
+  #   build: ./services/auth-service
+  #   ports:
+  #     - "4000:4000"
+
+  # 3. Order Service
+  order-service:
+    build: ./services/order-service
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=order-db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=orders
+    depends_on:
+      - order-db
+      # - kafka
+
+  # 4. Inventory Service
+  inventory-service:
+    build: ./services/inventory-service
+    ports:
+      - "6001:6001"
+    environment:
+      - DB_HOST=inventory-db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=inventory
+    depends_on:
+      - inventory-db
+
+  # 5. Databases
+  order-db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orders
+    volumes:
+      - ./databases/order-db/order.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  inventory-db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inventory
+    volumes:
+      - ./databases/inventory-db/inventory.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+
+  # 6. Messaging Infrastructure
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:7.4.0
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+
+  # kafka:
+  #   image: confluentinc/cp-kafka:7.4.0
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - "9092:9092"
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+  #     KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
