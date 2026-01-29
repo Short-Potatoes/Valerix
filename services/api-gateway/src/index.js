@@ -1,7 +1,16 @@
 const express = require("express");
 const { createProxyMiddleware } = require("http-proxy-middleware");
+const client = require('prom-client');
 
 const app = express();
+
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics({ register: client.register });
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
 
 app.use("/orders", createProxyMiddleware({
   target: "http://order-service:5000",

@@ -1,8 +1,18 @@
 const express = require("express");
 const routes = require("./order-routes");
+const client = require('prom-client');
 
 const app = express();
 app.use(express.json());
+
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics({ register: client.register });
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
+
 routes(app);
 
 app.get('/', (req, res)=>{
