@@ -1,17 +1,69 @@
 <!DOCTYPE html>
-<html>
-<body>
-  <button onclick="order()">Place Order</button>
-  <script>
-    function order() {
-      fetch("/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: [{ productId: "P1", qty: 2 }]
-        })
-      }).then(res => res.json()).then(console.log);
-    }
-  </script>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Valerix Control Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>Valerix Control Panel</h1>
+      <p>Test Orders, Inventory, Health, Metrics, and Gremlin latency.</p>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h2>Gateway & Services</h2>
+        <label class="label">API Base URL</label>
+        <input id="baseUrl" class="input" value="http://localhost:3000" />
+        <div class="row">
+          <button id="checkHealth" class="btn">Check Health</button>
+          <button id="fetchMetrics" class="btn btn-secondary">Fetch Metrics</button>
+        </div>
+        <div class="status">
+          <div>Order Health: <span id="orderHealth" class="pill">Unknown</span></div>
+          <div>Inventory Health: <span id="inventoryHealth" class="pill">Unknown</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Create Order</h2>
+        <label class="label">Customer ID</label>
+        <input id="customerId" class="input" value="demo-user" />
+
+        <label class="label">Items (JSON)</label>
+        <textarea id="itemsJson" class="textarea">[
+  { "productId": 1, "qty": 1 },
+  { "productId": 2, "qty": 1 }
+]</textarea>
+
+        <div class="row">
+          <button id="placeOrder" class="btn">Place Order</button>
+          <button id="gremlinTest" class="btn btn-warning">Gremlin Test (x4)</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Inventory Reserve (Direct)</h2>
+        <label class="label">Items (JSON)</label>
+        <textarea id="reserveJson" class="textarea">[
+  { "productId": 1, "qty": 2 }
+]</textarea>
+        <button id="reserveItems" class="btn">Reserve Items</button>
+      </section>
+
+      <section class="card">
+        <h2>Logs</h2>
+        <div id="log" class="log"></div>
+      </section>
+    </main>
+
+    <section class="card full">
+      <h2>Metrics Output</h2>
+      <pre id="metrics" class="metrics">No metrics loaded.</pre>
+    </section>
+
+    <script src="./app.js"></script>
+  </body>
 </html>
