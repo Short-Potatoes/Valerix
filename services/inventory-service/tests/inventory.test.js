@@ -51,7 +51,7 @@ describe("Inventory Service API", () => {
       });
 
     expect(res.statusCode).toBe(409);
-    expect(res.text).toBe("Out of stock");
+    expect(res.body.message).toBe("Out of stock");
     expect(app.locals.errorCounter.inc).toHaveBeenCalledWith({ type: 'BusinessLogic', message: 'OutOfStock' });
   });
 
@@ -76,5 +76,22 @@ describe("Inventory Service API", () => {
     const res = await request(app).get("/health");
     expect(res.statusCode).toBe(200);
     expect(res.body.status).toBe("UP");
+  });
+
+  // 5. Add Stock
+  it("should add stock successfully", async () => {
+    repo.addStock.mockResolvedValue([
+      { product_id: 1, product_name: "Wireless Gaming Mouse", quantity: 60, price: "49.99" }
+    ]);
+
+    const res = await request(app)
+      .post("/add")
+      .send({
+        items: [{ productId: 1, qty: 10 }]
+      });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe("Inventory updated");
+    expect(res.body.items).toHaveLength(1);
   });
 });
