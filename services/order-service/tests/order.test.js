@@ -79,7 +79,8 @@ describe("Order Service API", () => {
     // Mock Axios Timeout Error
     const err = new Error("Timeout of 1500ms exceeded");
     err.code = 'ECONNABORTED';
-    axios.post.mockRejectedValue(err);
+    axios.post.mockRejectedValueOnce(err).mockRejectedValueOnce(err);
+    axios.get.mockRejectedValue({ response: { status: 404, data: { status: "NOT_FOUND" } } });
 
     repo.createOrder.mockResolvedValue(true);
 
