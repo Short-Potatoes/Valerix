@@ -7,39 +7,41 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Copy files via SCP
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        passphrase: ${{secrets.SSH_PASSPHRASE}}
-        key: ${{ secrets.SSH_KEY }}
-        source: "docker-compose.yml,services/,databases/"
-        target: "/root/valerix_app"
-
-    # SSH into the server and run Docker Compose
     - name: Deploy via SSH
-      uses: appleboy/ssh-action@master 
+      uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SSH_HOST }}
-        passphrase: ${{secrets.SSH_PASSPHRASE}}
+        username: root
         key: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
+          # Clean up logic: Remove if exists (to avoid conflicts), then clone fresh
+          if [ -d "/root/valerix_app" ]; then
+            echo "Removing existing directory..."
+            rm -rf /root/valerix_app
+          fi
+          
+          echo "Cloning fresh repository..."
+          # Using HTTPS with GITHUB_TOKEN to avoid SSH key management on the server
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Short-Potatoes/Valerix.git /root/valerix_app
+          
           cd /root/valerix_app
           
-          echo "Stopping old services..."
+          echo "Starting services with Docker Compose..."
           docker compose down || true
-          
-          echo "Building and starting new services..."
-          # Build on the server (simplest for small scale without a container registry)
           docker compose up -d --build
           
-          echo "Cleaning up..."
+          echo "Cleaning up unused images..."
           docker image prune -f
           
           echo "Deployment Complete!"
+          echo "Running containers:"
           docker ps
