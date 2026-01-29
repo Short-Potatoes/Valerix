@@ -40,8 +40,13 @@ app.use((req, res, next) => {
 });
 
 app.get('/metrics', async (req, res) => {
-  const dbOk = await repo.ping();
-  dbHealthGauge.set(dbOk ? 1 : 0);
+  try {
+    const dbOk = await repo.ping();
+    dbHealthGauge.set(dbOk ? 1 : 0);
+  } catch (error) {
+    console.error('Metrics DB check failed:', error.message);
+    dbHealthGauge.set(0);
+  }
 
   res.set('Content-Type', client.register.contentType);
   res.end(await client.register.metrics());
