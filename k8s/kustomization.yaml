@@ -17,13 +17,13 @@ resources:
 
 images:
   - name: order-service
-    newName: DOCKER_USERNAME/order-service
+    newName: pritom235713/order-service
     newTag: latest
 
   - name: inventory-service
-    newName: DOCKER_USERNAME/inventory-service
+    newName: pritom235713/inventory-service
     newTag: latest
 
   - name: api-gateway
-    newName: DOCKER_USERNAME/api-gateway
+    newName: pritom235713/api-gateway
     newTag: latest
