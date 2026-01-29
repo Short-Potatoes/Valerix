@@ -61,11 +61,15 @@ module.exports = (app) => {
       // await publish("order.failed", order);
       
       if (e.code === 'ECONNABORTED') {
+        req.app.locals.errorCounter.inc({ type: 'DependencyError', message: 'InventoryTimeout' });
         return res.status(504).json({ error: "Inventory Service Timeout. Order processing delayed." });
       }
       if (e.response && e.response.status === 409) {
+          req.app.locals.errorCounter.inc({ type: 'BusinessLogic', message: 'OutOfStock' });
           return res.status(409).json({ error: "Some items are out of stock." });
       }
+
+      req.app.locals.errorCounter.inc({ type: 'UnknownError', message: e.message });
       res.status(503).json({ error: "Service Temporarily Unavailable" });
     }
   });
