@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: inventory-db
+spec:
+  serviceName: inventory-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-db
+  template:
+    metadata:
+      labels:
+        app: inventory-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: inventory
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi

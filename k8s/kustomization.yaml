@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - order-service-deployment.yaml
+  - order-service-service.yaml
+  - order-db-statefulset.yaml
+  - order-db-service.yaml
+
+  - inventory-service-deployment.yaml
+  - inventory-service-service.yaml
+  - inventory-db-statefulset.yaml
+  - inventory-db-service.yaml
+
+  - api-gateway-deployment.yaml
+  - api-gateway-service.yaml
+
+images:
+  - name: order-service
+    newName: DOCKER_USERNAME/order-service
+    newTag: latest
+
+  - name: inventory-service
+    newName: DOCKER_USERNAME/inventory-service
+    newTag: latest
+
+  - name: api-gateway
+    newName: DOCKER_USERNAME/api-gateway
+    newTag: latest

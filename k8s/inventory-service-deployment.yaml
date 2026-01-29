@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inventory-service
+  template:
+    metadata:
+      labels:
+        app: inventory-service
+    spec:
+      containers:
+      - name: inventory
+        image: inventory-service:latest
+        ports:
+        - containerPort: 6001
+        env:
+        - name: DB_HOST
+          value: order-db
+        - name: DB_USER
+          value: postgres
+        - name: DB_PASSWORD
+          value: postgres
+        - name: DB_NAME
+          value: orders
+
