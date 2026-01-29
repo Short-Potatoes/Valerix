@@ -9,6 +9,15 @@ CREATE TABLE inventory (
 CREATE INDEX idx_product_name ON inventory(product_name);
 CREATE INDEX idx_quantity ON inventory(quantity);
 
+CREATE TABLE reservations (
+  reservation_id UUID PRIMARY KEY,
+  items JSONB NOT NULL,
+  status TEXT NOT NULL, -- 'PENDING', 'RESERVED', 'FAILED'
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_reservations_status ON reservations(status);
+
 -- Insert some initial dummy data for testing
 INSERT INTO inventory (product_id, product_name, quantity, price) VALUES
 (1, 'Wireless Gaming Mouse', 50, 49.99),

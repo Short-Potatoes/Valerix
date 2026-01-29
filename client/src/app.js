@@ -11,6 +11,10 @@ const orderProductIdInput = document.getElementById("orderProductId");
 const orderQtyInput = document.getElementById("orderQty");
 const reserveProductIdInput = document.getElementById("reserveProductId");
 const reserveQtyInput = document.getElementById("reserveQty");
+const addProductIdInput = document.getElementById("addProductId");
+const addQtyInput = document.getElementById("addQty");
+const addNameInput = document.getElementById("addName");
+const addPriceInput = document.getElementById("addPrice");
 
 const log = (msg) => {
   const time = new Date().toLocaleTimeString();
@@ -126,5 +130,37 @@ document.getElementById("reserveItems").addEventListener("click", async () => {
     }
   } catch (e) {
     log(`Reserve failed: ${e.message}`);
+  }
+});
+
+document.getElementById("addStock").addEventListener("click", async () => {
+  const base = getBase();
+  const pid = parseInt(addProductIdInput.value);
+  const qty = parseInt(addQtyInput.value);
+  const name = addNameInput.value?.trim() || null;
+  const price = addPriceInput.value ? Number(addPriceInput.value) : null;
+
+  if (!pid || !qty) return log("Please enter valid Product ID and Quantity");
+
+  const payload = {
+    items: [{ productId: pid, qty: qty, productName: name, price }]
+  };
+
+  try {
+    const res = await fetch(`${base}/inventory/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const text = await res.text();
+    try {
+      const data = JSON.parse(text);
+      log(`POST /inventory/add -> ${res.status} | ${JSON.stringify(data)}`);
+    } catch {
+      log(`POST /inventory/add -> ${res.status} | ${text}`);
+    }
+  } catch (e) {
+    log(`Add stock failed: ${e.message}`);
   }
 });

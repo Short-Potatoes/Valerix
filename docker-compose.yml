@@ -49,6 +49,9 @@ services:
       - GREMLIN_ENABLED=true
       - GREMLIN_LAG_INTERVAL=4
       - GREMLIN_LAG_DURATION=5000
+      - GHOST_ENABLED=true
+      - GHOST_INTERVAL=5
+      - GHOST_MODE=500
     depends_on:
       - inventory-db
 
