@@ -23,7 +23,7 @@ jobs:
 
     # SSH into the server and run Docker Compose
     - name: Deploy via SSH
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@master 
       with:
         host: ${{ secrets.SSH_HOST }}
         passphrase: ${{secrets.SSH_PASSPHRASE}}
