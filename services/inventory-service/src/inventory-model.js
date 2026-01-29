@@ -1,19 +1,32 @@
-const inventory = {
-  P1: 10,
-  P2: 5
-};
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  host: "inventory-db",
+  user: "postgres",
+  password: "postgres",
+  database: "inventory"
+});
 
 module.exports = {
-  reserve(items) {
-    for (const item of items) {
-      if (!inventory[item.productId] || inventory[item.productId] < item.qty) {
+  async reserve(items) {
+    for (const i of items) {
+      const res = await pool.query(
+        "SELECT quantity FROM inventory WHERE product_id=$1",
+        [i.productId]
+      );
+
+      if (res.rowCount === 0 || res.rows[0].quantity < i.qty) {
         return false;
       }
     }
-    items.forEach(i => inventory[i.productId] -= i.qty);
+
+    for (const i of items) {
+      await pool.query(
+        "UPDATE inventory SET quantity = quantity - $1 WHERE product_id=$2",
+        [i.qty, i.productId]
+      );
+    }
+
     return true;
-  },
-  getAll() {
-    return inventory;
   }
 };

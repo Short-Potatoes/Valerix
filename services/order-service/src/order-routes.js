@@ -1,6 +1,7 @@
-const { v4: uuid } = require("uuid");
 const axios = require("axios");
-const Order = require("./order.model");
+const { v4: uuid } = require("uuid");
+const repo = require("./order.repo");
+const publish = require("./kafka.producer");
 
 module.exports = (app) => {
 
@@ -11,23 +12,22 @@ module.exports = (app) => {
       status: "CREATED"
     };
 
-    // Reserve inventory
     try {
-      await axios.post("http://inventory-service:6000/reserve", {
-        orderId: order.id,
-        items: order.items
-      });
+      await axios.post(
+        "http://inventory-service:6000/reserve",
+        { items: order.items },
+        { timeout: 1500 }
+      );
 
       order.status = "RESERVED";
-      Order.create(order);
+      await repo.createOrder(order);
+      await publish("order.reserved", order);
+
       res.status(201).json(order);
 
-    } catch (err) {
-      res.status(409).json({ message: "Inventory unavailable" });
+    } catch (e) {
+      await publish("order.failed", order);
+      res.status(503).send("Order failed");
     }
-  });
-
-  app.get("/", (req, res) => {
-    res.json(Order.getAll());
   });
 };

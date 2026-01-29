@@ -1,16 +1,9 @@
-const Inventory = require("./inventory.model");
+const repo = require("./inventory.repo");
 
 module.exports = (app) => {
-
-  app.post("/reserve", (req, res) => {
-    const success = Inventory.reserve(req.body.items);
-    if (!success) {
-      return res.status(409).send("Insufficient stock");
-    }
+  app.post("/reserve", async (req, res) => {
+    const ok = await repo.reserve(req.body.items);
+    if (!ok) return res.status(409).send("Out of stock");
     res.send("Reserved");
-  });
-
-  app.get("/", (req, res) => {
-    res.json(Inventory.getAll());
   });
 };
