@@ -1,4 +1,5 @@
 const repo = require("./inventory-model");
+const gremlin = require("./middleware/gremlin");
 
 module.exports = (app) => {
   // Health Check Endpoint
@@ -8,15 +9,7 @@ module.exports = (app) => {
     res.json({ status: "UP", db: "connected" });
   });
 
-  app.post("/reserve", async (req, res) => {
-    // GREMLIN LATENCY SIMULATION
-    // 25% chance of severe latency (2s - 5s)
-    if (Math.random() < 0.25) {
-      const delay = Math.floor(Math.random() * 3000) + 2000;
-      console.log(`[Inventory] GREMLIN ATTACK! Delaying response by ${delay}ms`);
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-
+  app.post("/reserve", gremlin, async (req, res) => {
     try {
       const result = await repo.reserve(req.body.items);
       if (!result.success) {

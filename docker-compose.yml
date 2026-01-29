@@ -1,4 +1,12 @@
 services:
+  # 0. Frontend
+  frontend:
+    build: ./client
+    ports:
+      - "80:80"
+    depends_on:
+      - api-gateway
+
   # 1. API Gateway
   api-gateway:
     build: ./services/api-gateway
@@ -38,6 +46,9 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=inventory
+      - GREMLIN_ENABLED=true
+      - GREMLIN_LAG_INTERVAL=4
+      - GREMLIN_LAG_DURATION=5000
     depends_on:
       - inventory-db
 
