@@ -2,6 +2,7 @@
   "name": "inventory-service",
   "dependencies": {
     "express": "^4.19.2",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "prom-client": "^15.1.0"
   }
 }
