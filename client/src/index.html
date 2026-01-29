@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <button onclick="order()">Place Order</button>
+  <script>
+    function order() {
+      fetch("/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: [{ productId: "P1", qty: 2 }]
+        })
+      }).then(res => res.json()).then(console.log);
+    }
+  </script>
+</body>
+</html>

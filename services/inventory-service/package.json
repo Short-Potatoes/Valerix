@@ -1,0 +1,6 @@
+{
+  "name": "inventory-service",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

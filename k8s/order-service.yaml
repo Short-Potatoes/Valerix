@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: order
+        image: order-service:latest
+        ports:
+        - containerPort: 5000
