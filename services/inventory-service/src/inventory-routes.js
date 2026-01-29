@@ -19,7 +19,10 @@ module.exports = (app) => {
 
     try {
       const result = await repo.reserve(req.body.items);
-      if (!result.success) return res.status(409).send("Out of stock");
+      if (!result.success) {
+        req.app.locals.errorCounter.inc({ type: 'BusinessLogic', message: 'OutOfStock' });
+        return res.status(409).send("Out of stock");
+      }
       
       res.json({
         message: "Reserved",
@@ -27,6 +30,7 @@ module.exports = (app) => {
       });
     } catch (err) {
       console.error(err);
+      req.app.locals.errorCounter.inc({ type: 'DatabaseError', message: err.message });
       res.status(500).send("Internal Server Error");
     }
   });
