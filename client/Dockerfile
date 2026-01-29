@@ -1,6 +1,6 @@
 FROM node:20-alpine
 WORKDIR /app
-COPY client/src ./
+COPY src ./
 RUN npm install -g http-server
-EXPOSE 80
+EXPOSE 8080
 CMD ["http-server", "-p", "8080", "-c-1"]
