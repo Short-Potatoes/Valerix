@@ -15,6 +15,14 @@ app.get('/metrics', async (req, res) => {
 
 inventoryRoutes(app);
 
+// app.post("/reserve", async (req, res) => {
+//   if (Math.random() < 0.3) {
+//     await new Promise(r => setTimeout(r, 3000)); // artificial delay
+//   }
+//   // continue normal logic
+// });
+
+
 app.get('/', (req, res)=>{
   res.send('Hey, I am in the Inventory Service Cluster');
 });
