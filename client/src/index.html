@@ -32,11 +32,16 @@
         <label class="label">Customer ID</label>
         <input id="customerId" class="input" value="demo-user" />
 
-        <label class="label">Items (JSON)</label>
-        <textarea id="itemsJson" class="textarea">[
-  { "productId": 1, "qty": 1 },
-  { "productId": 2, "qty": 1 }
-]</textarea>
+        <div class="row">
+          <div style="flex: 1;">
+            <label class="label">Product ID</label>
+            <input type="number" id="orderProductId" class="input" value="1" placeholder="Type 1, 2, 3..." />
+          </div>
+          <div style="flex: 1;">
+            <label class="label">Quantity</label>
+            <input type="number" id="orderQty" class="input" value="1" min="1" />
+          </div>
+        </div>
 
         <div class="row">
           <button id="placeOrder" class="btn">Place Order</button>
@@ -46,10 +51,16 @@
 
       <section class="card">
         <h2>Inventory Reserve (Direct)</h2>
-        <label class="label">Items (JSON)</label>
-        <textarea id="reserveJson" class="textarea">[
-  { "productId": 1, "qty": 2 }
-]</textarea>
+        <div class="row">
+          <div style="flex: 1;">
+            <label class="label">Product ID</label>
+            <input type="number" id="reserveProductId" class="input" value="1" />
+          </div>
+          <div style="flex: 1;">
+            <label class="label">Quantity</label>
+            <input type="number" id="reserveQty" class="input" value="1" />
+          </div>
+        </div>
         <button id="reserveItems" class="btn">Reserve Items</button>
       </section>
 

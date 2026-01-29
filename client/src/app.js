@@ -7,8 +7,10 @@ const inventoryHealthEl = document.getElementById("inventoryHealth");
 const baseUrlInput = document.getElementById("baseUrl");
 
 const customerIdInput = document.getElementById("customerId");
-const itemsJsonInput = document.getElementById("itemsJson");
-const reserveJsonInput = document.getElementById("reserveJson");
+const orderProductIdInput = document.getElementById("orderProductId");
+const orderQtyInput = document.getElementById("orderQty");
+const reserveProductIdInput = document.getElementById("reserveProductId");
+const reserveQtyInput = document.getElementById("reserveQty");
 
 const log = (msg) => {
   const time = new Date().toLocaleTimeString();
@@ -16,14 +18,6 @@ const log = (msg) => {
 };
 
 const getBase = () => baseUrlInput.value.replace(/\/+$/, "");
-
-const safeJson = (text) => {
-  try {
-    return JSON.parse(text);
-  } catch {
-    return null;
-  }
-};
 
 const setPill = (el, ok, text) => {
   el.textContent = text;
@@ -69,12 +63,14 @@ document.getElementById("fetchMetrics").addEventListener("click", async () => {
 
 document.getElementById("placeOrder").addEventListener("click", async () => {
   const base = getBase();
-  const items = safeJson(itemsJsonInput.value);
-  if (!items) return log("Invalid items JSON");
+  const pid = parseInt(orderProductIdInput.value);
+  const qty = parseInt(orderQtyInput.value);
+
+  if (!pid || !qty) return log("Please enter valid Product ID and Quantity");
 
   const payload = {
     customerId: customerIdInput.value || "guest",
-    items
+    items: [{ productId: pid, qty: qty }]
   };
 
   try {
@@ -84,8 +80,13 @@ document.getElementById("placeOrder").addEventListener("click", async () => {
       body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
-    log(`POST /orders -> ${res.status} | ${JSON.stringify(data)}`);
+    const text = await res.text();
+    try {
+      const data = JSON.parse(text);
+      log(`POST /orders -> ${res.status} | ${JSON.stringify(data)}`);
+    } catch {
+      log(`POST /orders -> ${res.status} | ${text}`);
+    }
   } catch (e) {
     log(`POST /orders failed: ${e.message}`);
   }
@@ -100,17 +101,29 @@ document.getElementById("gremlinTest").addEventListener("click", async () => {
 
 document.getElementById("reserveItems").addEventListener("click", async () => {
   const base = getBase();
-  const items = safeJson(reserveJsonInput.value);
-  if (!items) return log("Invalid reserve JSON");
+  const pid = parseInt(reserveProductIdInput.value);
+  const qty = parseInt(reserveQtyInput.value);
+
+  if (!pid || !qty) return log("Please enter valid Product ID and Quantity");
+
+  const payload = {
+    items: [{ productId: pid, qty: qty }]
+  };
 
   try {
     const res = await fetch(`${base}/inventory/reserve`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items })
+      body: JSON.stringify(payload)
     });
-    const data = await res.json();
-    log(`POST /inventory/reserve -> ${res.status} | ${JSON.stringify(data)}`);
+    
+    const text = await res.text();
+    try {
+      const data = JSON.parse(text);
+      log(`POST /inventory/reserve -> ${res.status} | ${JSON.stringify(data)}`);
+    } catch {
+      log(`POST /inventory/reserve -> ${res.status} | ${text}`);
+    }
   } catch (e) {
     log(`Reserve failed: ${e.message}`);
   }
