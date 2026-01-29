@@ -20,18 +20,17 @@ spec:
         - containerPort: 5432
         env:
         - name: POSTGRES_DB
-          value: inventory
+          value: inventorydb
         - name: POSTGRES_USER
-          value: postgres
+          value: inventoryuser
         - name: POSTGRES_PASSWORD
-          value: postgres
+          value: inventorypass
         volumeMounts:
-        - name: postgres-storage
+        - name: inventory-data
           mountPath: /var/lib/postgresql/data
-          subPath: postgres
   volumeClaimTemplates:
   - metadata:
-      name: postgres-storage
+      name: inventory-data
     spec:
       accessModes:
         - ReadWriteOnce

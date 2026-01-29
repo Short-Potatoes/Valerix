@@ -6,6 +6,6 @@ spec:
   selector:
     app: api-gateway
   ports:
-    - port: 3000
+    - port: 80
       targetPort: 3000
-  type: LoadBalancer
+  type: ClusterIP

@@ -15,5 +15,6 @@ spec:
       containers:
       - name: api-gateway
         image: api-gateway:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000

@@ -15,21 +15,16 @@ spec:
       containers:
       - name: inventory
         image: inventory-service:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 6001
         env:
         - name: DB_HOST
-          value: order-db
+          value: inventorydb
         - name: DB_USER
-          value: postgres
+          value: inventoryuser
         - name: DB_PASSWORD
-          value: postgres
+          value: inventorypass
         - name: DB_NAME
-          value: orders
-        - name: GHOST_ENABLED
-          value: "true"
-        - name: GHOST_INTERVAL
-          value: "5"
-        - name: GHOST_MODE
-          value: "500"
+          value: inventorydb
 

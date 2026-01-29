@@ -20,18 +20,17 @@ spec:
         - containerPort: 5432
         env:
         - name: POSTGRES_DB
-          value: orders
+          value: orderdb
         - name: POSTGRES_USER
-          value: postgres
+          value: orderuser
         - name: POSTGRES_PASSWORD
-          value: postgres
+          value: orderpass
         volumeMounts:
-        - name: postgres-storage
+        - name: order-data
           mountPath: /var/lib/postgresql/data
-          subPath: postgres
   volumeClaimTemplates:
   - metadata:
-      name: postgres-storage
+      name: order-data
     spec:
       accessModes:
         - ReadWriteOnce
