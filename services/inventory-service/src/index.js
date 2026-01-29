@@ -1,7 +1,7 @@
 const express = require("express");
 const inventoryRoutes = require("./inventory-routes");
 const client = require('prom-client');
-const repo = require("./inventory-model"); // Import repo for DB check
+const repo = require("./inventory-model"); 
 
 const app = express();
 app.use(express.json());
