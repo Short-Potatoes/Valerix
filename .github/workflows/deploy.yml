@@ -1,0 +1,45 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Copy files via SCP
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        passphrase: ${{secrets.SSH_PASSPHRASE}}
+        key: ${{ secrets.SSH_KEY }}
+        source: "docker-compose.yml,services/,databases/"
+        target: "/root/valerix_app"
+
+    # SSH into the server and run Docker Compose
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        passphrase: ${{secrets.SSH_PASSPHRASE}}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd /root/valerix_app
+          
+          echo "Stopping old services..."
+          docker compose down || true
+          
+          echo "Building and starting new services..."
+          # Build on the server (simplest for small scale without a container registry)
+          docker compose up -d --build
+          
+          echo "Cleaning up..."
+          docker image prune -f
+          
+          echo "Deployment Complete!"
+          docker ps
